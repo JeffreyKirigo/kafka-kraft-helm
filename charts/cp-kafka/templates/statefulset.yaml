@@ -47,7 +47,7 @@ spec:
           preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 1
             podAffinityTerm:
-              labelSelector:
+              la/etc/tlp.conf belSelector:
                 matchExpressions:
                   - key: "app"
                     operator: In
@@ -150,9 +150,8 @@ spec:
         - sh
         - -exc
         - |
-          export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
-          export KAFKA_NODE_ID=${HOSTNAME##*-} && \
-          export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.kraft-cp-kafka-headless.default.svc.cluster.local:9092 && \
+          export KAFKA_NODE_ID=${HOSTNAME##*-}
+          export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.broker-cp-kafka-headless.default.svc.cluster.local:9092
           exec /etc/confluent/docker/run
         volumeMounts:
         {{- if .Values.persistence.enabled }}
