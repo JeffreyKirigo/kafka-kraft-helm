@@ -150,10 +150,15 @@ spec:
         - sh
         - -exc
         - |
-          export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
-          export KAFKA_NODE_ID=${HOSTNAME##*-} && \
-          export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.kraft-cp-kafka-headless.default.svc.cluster.local:9092 && \
-          exec /etc/confluent/docker/run
+          if echo "${HOSTNAME}" | grep -e "kraft"; then
+            export KAFKA_NODE_ID=6 && \
+            export KAFKA_ADVERTISED_LISTENERS=CONTROLLER://:9093
+            exec /etc/confluent/docker/run
+          else
+            export KAFKA_NODE_ID=${HOSTNAME##*-}
+            export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.broker-cp-kafka-headless.default.svc.cluster.local:9092 && \
+            exec /etc/confluent/docker/run
+          fi
         volumeMounts:
         {{- if .Values.persistence.enabled }}
           {{- $disksPerBroker := .Values.persistence.disksPerBroker | int }}
